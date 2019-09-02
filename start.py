@@ -241,28 +241,38 @@ def main(genomes, config):
 					if max(outputs) == outputs[x1]:
 						mainCar.setPosition(x1)
 
-		if score > 5:
+		if score >= 200:
 			WIN = True
 			break
 
 		draw_window(win, base, mainCars, cars, score, GEN, len(ge))
 
 def run(config_path):
+	# Load configuration.
 	config = neat.config.Config(neat.DefaultGenome, neat.DefaultReproduction, neat.DefaultSpeciesSet, neat.DefaultStagnation, config_path)
 
+	# Create the population, which is the top-level object for a NEAT run.
 	p = neat.Population(config)
 
+	# Add a stdout reporter to show progress in the terminal.
 	p.add_reporter(neat.StdOutReporter(True))
 	stats = neat.StatisticsReporter()
 	p.add_reporter(stats)
 
-	winner = p.run(main,5)
+	# Run for up to N generations.
+	winner = p.run(main,20)
 	pygame.quit()
 
 	if WIN == True:
 		save_winner(winner)
+	else:
+		print("---------------------------------------------------------------")
+		print("Winning generation did not found. Change parameters or try again")
 
 if __name__ == "__main__":
+	# Determine path to configuration file. This path manipulation is
+    # here so that the script will run successfully regardless of the
+    # current working directory.
 	local_dir = os.path.dirname(__file__)
 	config_path = os.path.join(local_dir, "config-feedforward.txt")
 	run(config_path)
